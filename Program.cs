@@ -12,11 +12,12 @@ class Program
     { 
         Console.WriteLine("Hello, World!");
 
-        string userAssignedClientId = "32af5110-5295-4bda-9929-d568fc22d564";
+        var clientId = Environment.GetEnvironmentVariable("AZURE_CLIENT_ID");
+        
         var credential = new DefaultAzureCredential(
             new DefaultAzureCredentialOptions
             {
-                ManagedIdentityClientId = userAssignedClientId
+                ManagedIdentityClientId = clientId
             }
         );
 
