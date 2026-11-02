@@ -2,34 +2,45 @@
 namespace UncleDean.Infrastructure;
 
 using System;
-using Azure.Identity;
+using Azure.Core;
 using Azure.ResourceManager;
+using Azure.ResourceManager.ContainerRegistry;
+using Azure.ResourceManager.ContainerRegistry.Models;
 using Azure.ResourceManager.Resources;
+using Azure.Identity;
 
 class Program
 {
     static async Task Main(string[] args)
     { 
-        Console.WriteLine("Hello, World!");
+        Console.WriteLine("Hello, Uncle Dean Infrastructure!");
 
-        var clientId = Environment.GetEnvironmentVariable("AZURE_CLIENT_ID");
+
+        string subscriptionId = "7ce36e93-1d4e-4045-a134-acdc3fbaaa01";
+
+        string resourceGroupName = "Jordan_Resource_Group";
+
+        string registryName = "jordanNelsonRegistry";
         
-        var credential = new DefaultAzureCredential(
-            new DefaultAzureCredentialOptions
-            {
-                ManagedIdentityClientId = clientId
-            }
-        );
+        ArmClient client = new ArmClient(new DefaultAzureCredential(), subscriptionId);
 
-        ArmClient client = new ArmClient(credential);
+        AzureLocation location = AzureLocation.EastUS;
 
         SubscriptionResource subscription = await client.GetDefaultSubscriptionAsync();
-        ResourceGroupCollection collection = subscription.GetResourceGroups();
+        var resourceGroup = (await subscription.GetResourceGroupAsync(resourceGroupName)).Value;
 
-        await foreach (ResourceGroupResource resourceGroup in collection)
+        var registryCollection = resourceGroup.GetContainerRegistries();
+
+
+        var data = new ContainerRegistryData(location, new ContainerRegistrySku(ContainerRegistrySkuName.Basic))
         {
-            Console.WriteLine(resourceGroup.Data.Name);
-        }
+            IsAdminUserEnabled = true
+        };
+
+
+
+
+ 
 
     }
 }
