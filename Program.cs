@@ -8,6 +8,8 @@ using Azure.ResourceManager.ContainerRegistry;
 using Azure.ResourceManager.ContainerRegistry.Models;
 using Azure.ResourceManager.Resources;
 using Azure.Identity;
+using System.Data;
+using System.Runtime.CompilerServices;
 
 class Program
 {
@@ -20,7 +22,7 @@ class Program
 
         string resourceGroupName = "Jordan_Resource_Group";
 
-        string registryName = "jordanNelsonRegistry";
+        string registryName = "jordannnelsonregistry";
         
         ArmClient client = new ArmClient(new DefaultAzureCredential(), subscriptionId);
 
@@ -31,11 +33,22 @@ class Program
 
         var registryCollection = resourceGroup.GetContainerRegistries();
 
+        foreach (ContainerRegistryResource resource in registryCollection)
+        {
+            Console.WriteLine(resource);
+        }
+
 
         var data = new ContainerRegistryData(location, new ContainerRegistrySku(ContainerRegistrySkuName.Basic))
         {
             IsAdminUserEnabled = true
         };
+
+        ArmOperation<ContainerRegistryResource> lro = await registryCollection.CreateOrUpdateAsync(
+            Azure.WaitUntil.Completed,
+            registryName,
+            data
+        );
 
 
 
